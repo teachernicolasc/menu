@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Restaurante de Palabras: El Menú Chiflado</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Font: Fredoka -->
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brandYellow: '#FFD166',
+            brandOrange: '#FF9F1C',
+            brandPink: '#FF4081',
+            brandGreen: '#06D6A0',
+            brandPurple: '#8338EC',
+            brandBlue: '#118AB2',
+            kitchenBg: '#FFF9EC'
+          },
+          fontFamily: {
+            fredoka: ['Fredoka', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Fredoka', sans-serif;
+      background-color: #FFF9EC;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* Custom Animations */
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-8px) rotate(2deg); }
+    }
+    .animate-float {
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse-bounce {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.04); }
+    }
+    .animate-pulse-bounce {
+      animation: pulse-bounce 1.5s ease-in-out infinite;
+    }
+
+    @keyframes bubble {
+      0% { transform: translateY(0) scale(0.7); opacity: 0; }
+      50% { opacity: 0.9; }
+      100% { transform: translateY(-50px) scale(1.3); opacity: 0; }
+    }
+    .bubble-particle {
+      animation: bubble 2s linear infinite;
+    }
+
+    /* Custom Scrollbar for Pantry */
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 8px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #FFE8D6;
+      border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #FF9F1C;
+      border-radius: 10px;
+    }
+
+    /* Dragging Visual Styles */
+    .dragging {
+      opacity: 0.5;
+      transform: scale(0.95);
+    }
+    .drag-over {
+      border-color: #06D6A0 !important;
+      background-color: rgba(6, 214, 160, 0.25) !important;
+      transform: scale(1.02);
+    }
+  </style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col justify-between overflow-x-hidden">
+
+  <!-- TOP HEADER / NAVBAR -->
+  <header class="bg-gradient-to-r from-brandOrange via-brandYellow to-brandPink p-3 md:p-4 shadow-lg border-b-4 border-amber-500">
+    <div class="max-w-6xl mx-auto flex flex-wrap justify-between items-center gap-2">
+      <!-- Logo -->
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="goToHome()">
+        <div class="bg-white p-2 rounded-2xl shadow-md transform -rotate-3">
+          <span class="text-3xl md:text-4xl">👨‍🍳</span>
+        </div>
+        <div>
+          <h1 class="text-xl md:text-3xl font-extrabold text-white drop-shadow-md tracking-wide">
+            El Menú Chiflado
+          </h1>
+          <p class="text-xs md:text-sm font-bold text-amber-900 tracking-wider">RESTAURANTE DE PALABRAS • 2º BÁSICO</p>
+        </div>
+      </div>
+
+      <!-- Stats & Progress Bar -->
+      <div id="game-stats-bar" class="hidden flex items-center space-x-3 bg-white/90 backdrop-blur px-4 py-2 rounded-2xl shadow-inner text-sm md:text-base border-2 border-amber-300">
+        <!-- Exercise Progress -->
+        <div class="flex flex-col items-center">
+          <span class="text-[10px] font-extrabold uppercase text-amber-800 tracking-wider">Progreso</span>
+          <span class="font-extrabold text-brandPurple text-base"><span id="current-ex-num">1</span>/25</span>
+        </div>
+        <div class="h-6 w-0.5 bg-amber-300"></div>
+        <!-- Total Stars -->
+        <div class="flex items-center space-x-1" title="Estrellas Totales">
+          <span class="text-2xl text-yellow-500">⭐</span>
+          <span id="total-stars" class="font-black text-amber-900 text-lg">0</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="max-w-6xl w-full mx-auto p-3 md:p-6 flex-grow flex flex-col justify-center">
+
+    <!-- PANTALLA 1: PORTADA PRINCIPAL E INSTRUCCIONES -->
+    <section id="screen-welcome" class="flex flex-col items-center justify-center text-center py-4">
+      <div class="bg-white border-4 border-amber-400 rounded-3xl p-6 md:p-10 shadow-2xl max-w-3xl w-full relative overflow-hidden">
+        
+        <!-- Badge -->
+        <span class="inline-block bg-brandYellow text-amber-900 font-extrabold px-4 py-1.5 rounded-full text-sm mb-3 shadow">
+          ¡Aprende Jugando Lenguaje!
+        </span>
+
+        <h2 class="text-3xl md:text-5xl font-black text-brandOrange mb-3">
+          ¡Bienvenido al Menú Chiflado!
+        </h2>
+        <p class="text-slate-600 text-base md:text-lg mb-6 leading-relaxed font-medium">
+          Nuestros clientes animales tienen mucha hambre. Cada uno vendrá a pedir un plato especial contando las <b>sílabas</b> de los ingredientes.
+        </p>
+
+        <!-- INSTRUCCIONES DE JUEGO (Paso a Paso sencillo para 2° básico) -->
+        <div class="bg-amber-50 rounded-2xl p-4 md:p-6 border-2 border-amber-200 mb-8 text-left">
+          <h3 class="text-lg md:text-xl font-extrabold text-amber-900 mb-4 text-center flex items-center justify-center gap-2">
+            <span>📖</span> ¿Cómo jugar? ¡Es muy fácil!
+          </h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs md:text-sm">
+            <!-- Paso 1 -->
+            <div class="bg-white p-3.5 rounded-xl border border-amber-300 flex flex-col items-center text-center shadow-sm">
+              <span class="text-3xl mb-2">🐻💬</span>
+              <span class="font-extrabold text-amber-800 text-sm mb-1">1. Lee el pedido</span>
+              <p class="text-slate-600">Mira el globo de texto del animal para saber cuántas sílabas necesita.</p>
+            </div>
+            <!-- Paso 2 -->
+            <div class="bg-white p-3.5 rounded-xl border border-amber-300 flex flex-col items-center text-center shadow-sm">
+              <span class="text-3xl mb-2">🧺➡️🍲</span>
+              <span class="font-extrabold text-amber-800 text-sm mb-1">2. Elige ingredientes</span>
+              <p class="text-slate-600">Cuenta los golpes de voz (ej: <b>Plá-ta-no = 3 sílabas</b>) y arrástralos a la gran olla.</p>
+            </div>
+            <!-- Paso 3 -->
+            <div class="bg-white p-3.5 rounded-xl border border-amber-300 flex flex-col items-center text-center shadow-sm">
+              <span class="text-3xl mb-2">🍽️⭐</span>
+              <span class="font-extrabold text-amber-800 text-sm mb-1">3. ¡Sirve el plato!</span>
+              <p class="text-slate-600">Presiona el botón para entregar la comida y ganar hasta 3 estrellas.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- BOTÓN DE INICIO -->
+        <button onclick="startGame()" class="w-full max-w-md py-4 px-8 bg-gradient-to-r from-brandGreen to-emerald-500 hover:from-emerald-400 hover:to-emerald-600 text-white font-black text-xl md:text-2xl rounded-2xl shadow-xl border-b-4 border-emerald-700 transform hover:scale-105 active:scale-95 transition">
+          ¡A JUGAR! 🚀
+        </button>
+      </div>
+    </section>
+
+
+    <!-- PANTALLA 2: PANTALLA DE JUEGO (COMENSALES + DESPENSA + OLLA GRANDE) -->
+    <section id="screen-game" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+      
+      <!-- COLUMNA IZQUIERDA: COMENSAL Y GRAN OLLA DE COCINA -->
+      <div class="lg:col-span-7 flex flex-col space-y-4">
+        
+        <!-- Tarjeta del Comensal Animal y Globo de Comanda -->
+        <div class="bg-white rounded-3xl p-4 md:p-5 shadow-xl border-4 border-amber-300 relative flex flex-col sm:flex-row items-center justify-between gap-3">
+          
+          <!-- Botón de Audio Parlante -->
+          <button onclick="speakOrder()" title="Escuchar orden con voz" class="absolute top-3 right-3 bg-brandYellow hover:bg-amber-300 text-amber-900 w-11 h-11 rounded-full flex items-center justify-center shadow-md active:scale-95 transition border-2 border-amber-400">
+            <i class="fa-solid fa-volume-high text-xl"></i>
+          </button>
+
+          <!-- Avatar del Animal -->
+          <div class="flex flex-col items-center justify-center min-w-[120px]">
+            <div id="customer-avatar" class="text-7xl md:text-8xl animate-float filter drop-shadow-md">
+              🐻
+            </div>
+            <span id="customer-name" class="font-extrabold text-amber-900 bg-amber-100 px-3 py-1 rounded-full text-xs mt-1 border border-amber-300">
+              Oso Glotón
+            </span>
+          </div>
+
+          <!-- Globo de Texto de Comanda -->
+          <div class="relative bg-amber-50 border-3 border-amber-400 p-4 rounded-2xl shadow-md flex-1 w-full sm:w-auto">
+            <!-- Indicador triangular -->
+            <div class="hidden sm:block absolute -left-3 top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-8 border-t-transparent border-r-[14px] border-r-amber-400 border-b-8 border-b-transparent"></div>
+            
+            <div class="flex items-center space-x-2 mb-1">
+              <span class="text-xs font-black uppercase tracking-wider text-brandOrange">Pedido <span id="exercise-badge">1 de 25</span></span>
+            </div>
+            
+            <p id="order-text" class="text-slate-800 font-extrabold text-base md:text-lg leading-snug">
+              "Cargando pedido..."
+            </p>
+
+            <!-- Requisitos visuales / Checklist -->
+            <div id="order-checklist" class="mt-3 flex flex-wrap gap-2 border-t border-amber-200 pt-2 text-xs font-bold">
+            </div>
+          </div>
+        </div>
+
+        <!-- GRAN OLLA INTERACTIVA (CONTENEDOR EXPANDIDO PARA FÁCIL DRAG & DROP) -->
+        <div class="bg-gradient-to-b from-amber-100 via-orange-100 to-amber-200 rounded-3xl p-5 md:p-6 shadow-xl border-4 border-amber-400 flex flex-col items-center justify-between relative overflow-hidden flex-grow min-h-[340px]">
+          
+          <!-- Efectos visuales de vapor -->
+          <div class="flex space-x-6 opacity-60">
+            <span class="text-3xl animate-bounce" style="animation-delay: 0.1s">💨</span>
+            <span class="text-3xl animate-bounce" style="animation-delay: 0.4s">💨</span>
+            <span class="text-3xl animate-bounce" style="animation-delay: 0.7s">💨</span>
+          </div>
+
+          <!-- Olla visualmente agrandada y receptora táctil/drag -->
+          <div id="pot-container" class="relative group cursor-pointer my-2 transform transition hover:scale-105 w-full flex flex-col items-center justify-center" onclick="clearPotIfEmptyHint()">
+            
+            <!-- Icono gigante de la Olla -->
+            <div class="text-[110px] md:text-[140px] leading-none filter drop-shadow-2xl relative z-10 transition-transform">
+              🍲
+            </div>
+
+            <!-- Burbujas animadas al tener ingredientes -->
+            <div id="pot-bubbles" class="hidden absolute top-2 left-1/2 -translate-x-1/2 z-20 space-x-3">
+              <span class="inline-block text-2xl bubble-particle">🫧</span>
+              <span class="inline-block text-2xl bubble-particle" style="animation-delay: 0.5s">✨</span>
+              <span class="inline-block text-2xl bubble-particle" style="animation-delay: 1s">🫧</span>
+            </div>
+          </div>
+
+          <!-- Contenedor interior de los ingredientes dentro de la Olla -->
+          <div class="w-full bg-white/90 backdrop-blur rounded-2xl p-3 border-3 border-amber-400 min-h-[80px] flex flex-wrap items-center justify-center gap-2 z-20 shadow-inner">
+            <span id="empty-pot-msg" class="text-slate-400 text-xs md:text-sm font-bold italic text-center">
+              👉 Arrastra o toca los ingredientes de la despensa para agregarlos a la gran olla.
+            </span>
+            <div id="pot-ingredients-list" class="flex flex-wrap justify-center gap-2"></div>
+          </div>
+
+          <!-- Botones de Acción -->
+          <div class="mt-4 flex space-x-3 w-full max-w-sm z-20">
+            <button onclick="clearPot()" class="px-4 py-3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-extrabold rounded-2xl text-xs md:text-sm transition shadow">
+              <i class="fa-solid fa-trash mr-1"></i> Vaciar
+            </button>
+            <button onclick="serveDish()" class="flex-1 px-6 py-3 bg-gradient-to-r from-brandGreen to-emerald-500 hover:from-emerald-400 hover:to-emerald-600 text-white font-black rounded-2xl shadow-lg border-b-4 border-emerald-700 text-base md:text-lg transform active:translate-y-0.5 transition">
+              ¡Servir Plato! 🍽️
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- COLUMNA DERECHA: DESPENSA MÁGICA DE INGREDIENTES -->
+      <div class="lg:col-span-5 bg-white rounded-3xl p-4 md:p-5 shadow-xl border-4 border-amber-300 flex flex-col justify-between">
+        
+        <div>
+          <div class="flex items-center justify-between mb-2 border-b-2 border-amber-100 pb-2">
+            <div class="flex items-center space-x-2">
+              <span class="text-3xl">🧺</span>
+              <h3 class="text-xl font-black text-amber-900">Despensa de Palabras</h3>
+            </div>
+            <span class="text-xs bg-amber-100 text-amber-800 font-extrabold px-2.5 py-1 rounded-full border border-amber-300">
+              Toca o Arrastra
+            </span>
+          </div>
+
+          <p class="text-xs text-slate-500 mb-3 font-bold">
+            Lee la palabra dividida en sílabas para seleccionar la correcta:
+          </p>
+
+          <!-- Grid de Ingredientes -->
+          <div id="pantry-grid" class="grid grid-cols-2 gap-2.5 overflow-y-auto max-h-[500px] p-1 custom-scrollbar">
+            <!-- Cargado dinámicamente -->
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- PANTALLA 3: PANTALLA FINAL DE VICTORIA (COMPLETAR 25 EXERCISES) -->
+    <section id="screen-victory" class="hidden flex flex-col items-center justify-center text-center py-6">
+      <div class="bg-white border-8 border-brandYellow rounded-3xl p-8 md:p-12 shadow-2xl max-w-2xl w-full relative overflow-hidden animate-pulse-bounce">
+        
+        <div class="text-8xl mb-3">🏆</div>
+
+        <h2 class="text-3xl md:text-5xl font-black text-amber-900 mb-2">
+          ¡FELICIDADES SÚPER CHEF!
+        </h2>
+        <p class="text-slate-600 text-base md:text-lg font-bold mb-6">
+          Has completado con éxito los <b>25 pedidos</b> de nuestros animales.
+        </p>
+
+        <!-- Resumen de Estrellas -->
+        <div class="bg-amber-50 rounded-2xl p-6 border-4 border-amber-300 mb-8 flex flex-col items-center justify-center">
+          <span class="text-xs font-black uppercase text-amber-800 tracking-wider mb-2">Puntuación Total Obtenida</span>
+          <div class="flex items-center space-x-2 text-5xl text-yellow-500 mb-2">
+            <span>⭐</span>
+            <span id="victory-total-stars" class="font-black text-amber-900">75</span>
+            <span class="text-slate-400 text-3xl">/ 75</span>
+          </div>
+          <p id="victory-feedback" class="text-xs md:text-sm font-bold text-slate-700 mt-1">
+            ¡Eres un experto contando sílabas!
+          </p>
+        </div>
+
+        <button onclick="restartGame()" class="w-full py-4 px-8 bg-gradient-to-r from-brandPurple to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-black text-xl rounded-2xl shadow-xl border-b-4 border-indigo-900 transform hover:scale-105 active:scale-95 transition">
+          ¡Jugar De Nuevo! 🔄
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-amber-900/10 border-t border-amber-200 py-3 text-center text-xs font-extrabold text-amber-900">
+    <p>Restaurante de Palabras: El Menú Chiflado • Recurso Educativo para Lenguaje 2º Básico</p>
+  </footer>
+
+
+  <!-- MODAL: RESULTADO DEL PEDIDO -->
+  <div id="result-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl border-4 border-amber-400 p-6 md:p-8 max-w-md w-full shadow-2xl text-center transform transition-all">
+      
+      <div id="modal-icon" class="text-7xl mb-2">🎉</div>
+      
+      <h3 id="modal-title" class="text-2xl md:text-3xl font-black text-amber-900 mb-1">
+        ¡Plato Servido!
+      </h3>
+      <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">
+        Evaluación del Pedido
+      </p>
+
+      <!-- Estrellas -->
+      <div id="modal-stars" class="flex justify-center space-x-2 text-4xl text-amber-400 mb-4">
+        <i class="fa-solid fa-star"></i>
+        <i class="fa-solid fa-star"></i>
+        <i class="fa-solid fa-star"></i>
+      </div>
+
+      <!-- Feedback -->
+      <div id="modal-feedback" class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-4 text-xs md:text-sm font-bold text-slate-700 mb-6">
+        ¡Excelente trabajo! Has seguido todos los requisitos.
+      </div>
+
+      <!-- Botón Siguiente -->
+      <button onclick="closeModalAndNext()" class="w-full py-3.5 bg-gradient-to-r from-brandOrange to-amber-500 hover:from-amber-500 hover:to-brandOrange text-white font-black rounded-2xl shadow-lg border-b-4 border-amber-700 text-base md:text-lg transition transform active:translate-y-0.5">
+        ¡Siguiente Pedido! ➡️
+      </button>
+
+    </div>
+  </div>
+
+
+  <!-- JAVASCRIPT GAME LOGIC -->
+  <script>
+    /* ==========================================
+       DATOS: INGREDIENTES Y PERSONAJES (SOLO ANIMALES)
+       ========================================== */
+    const PANTRY_ITEMS = [
+      // 1 sílaba
+      { id: 'pan', name: 'Pan', syllabled: 'Pan', syllables: 1, type: 'salado', icon: '🍞' },
+      { id: 'sal', name: 'Sal', syllabled: 'Sal', syllables: 1, type: 'salado', icon: '🧂' },
+      { id: 'pez', name: 'Pez', syllabled: 'Pez', syllables: 1, type: 'salado', icon: '🐟' },
+      { id: 'miel', name: 'Miel', syllabled: 'Miel', syllables: 1, type: 'dulce', icon: '🍯' },
+      
+      // 2 sílabas
+      { id: 'sopa', name: 'Sopa', syllabled: 'So-pa', syllables: 2, type: 'caliente', icon: '🍲' },
+      { id: 'pizza', name: 'Pizza', syllabled: 'Piz-za', syllables: 2, type: 'salado', icon: '🍕' },
+      { id: 'queso', name: 'Queso', syllabled: 'Que-so', syllables: 2, type: 'salado', icon: '🧀' },
+      { id: 'pera', name: 'Pera', syllabled: 'Pe-ra', syllables: 2, type: 'dulce', icon: '🍐' },
+      { id: 'aji', name: 'Ají', syllabled: 'A-jí', syllables: 2, type: 'picante', icon: '🌶️' },
+      { id: 'limon', name: 'Limón', syllabled: 'Li-món', syllables: 2, type: 'ácido', icon: '🍋' },
+
+      // 3 sílabas
+      { id: 'platano', name: 'Plátano', syllabled: 'Plá-ta-no', syllables: 3, type: 'dulce', icon: '🍌' },
+      { id: 'manzana', name: 'Manzana', syllabled: 'Man-za-na', syllables: 3, type: 'dulce', icon: '🍎' },
+      { id: 'lechuga', name: 'Lechuga', syllabled: 'Le-chu-ga', syllables: 3, type: 'saludable', icon: '🥬' },
+      { id: 'tomate', name: 'Tomate', syllabled: 'To-ma-te', syllables: 3, type: 'saludable', icon: '🍅' },
+      { id: 'pescado', name: 'Pescado', syllabled: 'Pes-ca-do', syllables: 3, type: 'salado', icon: '🎣' },
+      { id: 'galleta', name: 'Galleta', syllabled: 'Gal-le-ta', syllables: 3, type: 'dulce', icon: '🍪' },
+
+      // 4 sílabas
+      { id: 'chocolate', name: 'Chocolate', syllabled: 'Cho-co-la-te', syllables: 4, type: 'dulce', icon: '🍫' },
+      { id: 'mermelada', name: 'Mermelada', syllabled: 'Mer-me-la-da', syllables: 4, type: 'dulce', icon: '🍓' },
+      { id: 'zanahoria', name: 'Zanahoria', syllabled: 'Za-na-ho-ria', syllables: 4, type: 'saludable', icon: '🥕' }
+    ];
+
+    // Personajes únicamente animales
+    const ANIMAL_CUSTOMERS = [
+      { id: 'bear', name: 'Oso Glotón', avatar: '🐻' },
+      { id: 'rabbit', name: 'Coneja Orejitas', avatar: '🐰' },
+      { id: 'cat', name: 'Gato Chef', avatar: '🐱' },
+      { id: 'dog', name: 'Perrito Amigable', avatar: '🐶' },
+      { id: 'fox', name: 'Zorro Astuto', avatar: '🦊' },
+      { id: 'panda', name: 'Panda Comilón', avatar: '🐼' },
+      { id: 'lion', name: 'León Rey', avatar: '🦁' },
+      { id: 'owl', name: 'Búho Sabio', avatar: '🦉' }
+    ];
+
+    // EXACTAMENTE 25 EJERCICIOS SECUENCIALES (CONCRETO 2° BÁSICO)
+    const EXERCISES_25 = [
+      { animalIdx: 0, reqs: [{ syllables: 1, count: 2 }], text: "¡Hola! Quiero un plato sencillo con <b>2 ingredientes de 1 sílaba</b>." },
+      { animalIdx: 1, reqs: [{ syllables: 2, count: 2 }], text: "¡Tengo mucha hambre! Pon en la olla <b>2 ingredientes de 2 sílabas</b>." },
+      { animalIdx: 2, reqs: [{ syllables: 3, count: 2 }], text: "Mmm... Me gustaría probar <b>2 ingredientes de 3 sílabas</b>." },
+      { animalIdx: 3, reqs: [{ syllables: 4, count: 1 }], text: "¡Hola! Para mi plato quiero solo <b>1 ingrediente de 4 sílabas</b>." },
+      { animalIdx: 4, reqs: [{ syllables: 2, count: 1 }, { type: 'dulce', count: 1 }], text: "Quiero <b>1 ingrediente de 2 sílabas</b> y <b>1 ingrediente dulce</b>." },
+      
+      { animalIdx: 5, reqs: [{ syllables: 1, count: 1 }, { syllables: 2, count: 1 }], text: "Sírveme <b>1 ingrediente de 1 sílaba</b> y <b>1 ingrediente de 2 sílabas</b>." },
+      { animalIdx: 6, reqs: [{ syllables: 3, count: 1 }, { type: 'saludable', count: 1 }], text: "Busco estar sano: trae <b>1 ingrediente de 3 sílabas</b> y <b>1 ingrediente saludable</b>." },
+      { animalIdx: 7, reqs: [{ syllables: 2, count: 2 }, { type: 'picante', count: 1 }], text: "¡Me gusta el sabor fuerte! Agrega <b>2 ingredientes de 2 sílabas</b> y <b>1 ingrediente picante</b>." },
+      { animalIdx: 0, reqs: [{ syllables: 1, count: 2 }, { syllables: 3, count: 1 }], text: "Hoy quiero combinar: <b>2 ingredientes de 1 sílaba</b> y <b>1 ingrediente de 3 sílabas</b>." },
+      { animalIdx: 1, reqs: [{ syllables: 4, count: 1 }, { type: 'dulce', count: 1 }], text: "Prepara una delicia con <b>1 ingrediente de 4 sílabas</b> y <b>1 ingrediente dulce</b>." },
+      
+      { animalIdx: 2, reqs: [{ syllables: 2, count: 3 }], text: "¡Tengo un gran apetito! Quiero <b>3 ingredientes de 2 sílabas</b>." },
+      { animalIdx: 3, reqs: [{ syllables: 3, count: 2 }, { type: 'salado', count: 1 }], text: "Por favor, agrega <b>2 ingredientes de 3 sílabas</b> y <b>1 ingrediente salado</b>." },
+      { animalIdx: 4, reqs: [{ syllables: 1, count: 1 }, { syllables: 4, count: 1 }], text: "Quiero comparar: <b>1 ingrediente de 1 sílaba</b> y <b>1 ingrediente de 4 sílabas</b>." },
+      { animalIdx: 5, reqs: [{ syllables: 2, count: 2 }, { syllables: 3, count: 1 }], text: "Combina en la olla <b>2 ingredientes de 2 sílabas</b> y <b>1 ingrediente de 3 sílabas</b>." },
+      { animalIdx: 6, reqs: [{ syllables: 3, count: 2 }, { type: 'dulce', count: 1 }], text: "Deseo una merienda dulce con <b>2 ingredientes de 3 sílabas</b> y <b>1 ingrediente dulce</b>." },
+
+      { animalIdx: 7, reqs: [{ syllables: 1, count: 2 }, { type: 'saludable', count: 1 }], text: "Tráeme <b>2 ingredientes de 1 sílaba</b> y <b>1 ingrediente saludable</b>." },
+      { animalIdx: 0, reqs: [{ syllables: 2, count: 1 }, { syllables: 4, count: 1 }], text: "Pon en la olla <b>1 ingrediente de 2 sílabas</b> y <b>1 ingrediente de 4 sílabas</b>." },
+      { animalIdx: 1, reqs: [{ syllables: 3, count: 3 }], text: "¡Me encantan las palabras largas! Dame <b>3 ingredientes de 3 sílabas</b>." },
+      { animalIdx: 2, reqs: [{ syllables: 1, count: 1 }, { syllables: 2, count: 1 }, { syllables: 3, count: 1 }], text: "Quiero una mezcla: <b>1 ingrediente de 1 sílaba</b>, <b>1 de 2 sílabas</b> y <b>1 de 3 sílabas</b>." },
+      { animalIdx: 3, reqs: [{ syllables: 4, count: 1 }, { type: 'salado', count: 2 }], text: "Tráeme <b>1 ingrediente de 4 sílabas</b> y <b>2 ingredientes salados</b>." },
+
+      { animalIdx: 4, reqs: [{ syllables: 2, count: 2 }, { type: 'ácido', count: 1 }], text: "¡Quiero algo refrescante! Dame <b>2 ingredientes de 2 sílabas</b> y <b>1 ingrediente ácido</b>." },
+      { animalIdx: 5, reqs: [{ syllables: 3, count: 2 }, { syllables: 1, count: 1 }], text: "Prepara mi sopa con <b>2 ingredientes de 3 sílabas</b> y <b>1 ingrediente de 1 sílaba</b>." },
+      { animalIdx: 6, reqs: [{ syllables: 4, count: 2 }], text: "¡Casi terminamos! Quiero <b>2 ingredientes de 4 sílabas</b>." },
+      { animalIdx: 7, reqs: [{ syllables: 2, count: 2 }, { syllables: 4, count: 1 }], text: "Para el penúltimo plato: <b>2 ingredientes de 2 sílabas</b> y <b>1 ingrediente de 4 sílabas</b>." },
+      { animalIdx: 0, reqs: [{ syllables: 1, count: 1 }, { syllables: 2, count: 1 }, { syllables: 3, count: 1 }, { syllables: 4, count: 1 }], text: "¡EL GRAN FINAL! Trae <b>1 ingrediente de cada tipo (1, 2, 3 y 4 sílabas)</b>." }
+    ];
+
+    /* ==========================================
+       ESTADO DEL JUEGO
+       ========================================== */
+    let currentExerciseIndex = 0; // 0 a 24
+    let totalStars = 0;
+    let potContents = [];
+    let currentCustomer = null;
+    let currentOrder = null;
+
+    /* ==========================================
+       EFECTOS DE SONIDO (WEB AUDIO API)
+       ========================================== */
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function initAudio() {
+      if (!audioCtx) audioCtx = new AudioCtx();
+    }
+
+    function playSound(type) {
+      try {
+        initAudio();
+        if (!audioCtx) return;
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        const now = audioCtx.currentTime;
+
+        if (type === 'pop') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(400, now);
+          osc.frequency.exponentialRampToValueAtTime(800, now + 0.1);
+          gain.gain.setValueAtTime(0.3, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.1);
+          osc.start(now);
+          osc.stop(now + 0.1);
+        } else if (type === 'drop') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(300, now);
+          osc.frequency.exponentialRampToValueAtTime(150, now + 0.15);
+          gain.gain.setValueAtTime(0.4, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.15);
+          osc.start(now);
+          osc.stop(now + 0.15);
+        } else if (type === 'win') {
+          [523.25, 659.25, 783.99].forEach((freq, idx) => {
+            const noteOsc = audioCtx.createOscillator();
+            const noteGain = audioCtx.createGain();
+            noteOsc.connect(noteGain);
+            noteGain.connect(audioCtx.destination);
+            noteOsc.frequency.setValueAtTime(freq, now + idx * 0.1);
+            noteGain.gain.setValueAtTime(0.2, now + idx * 0.1);
+            noteGain.gain.linearRampToValueAtTime(0.01, now + idx * 0.1 + 0.3);
+            noteOsc.start(now + idx * 0.1);
+            noteOsc.stop(now + idx * 0.1 + 0.3);
+          });
+        } else if (type === 'clear') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(250, now);
+          osc.frequency.linearRampToValueAtTime(100, now + 0.2);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+          osc.start(now);
+          osc.stop(now + 0.2);
+        }
+      } catch (e) {}
+    }
+
+    /* ==========================================
+       TEXT TO SPEECH (SÍNTESIS DE VOZ)
+       ========================================== */
+    function speakText(text) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const cleanText = text.replace(/<\/?[^>]+(>|$)/g, "");
+        const utterance = new SpeechSynthesisUtterance(cleanText);
+        utterance.lang = 'es-ES';
+        utterance.rate = 0.9;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function speakOrder() {
+      if (currentOrder && currentCustomer) {
+        speakText(`${currentCustomer.name} dice: ${currentOrder.text}`);
+      }
+    }
+
+    /* ==========================================
+       NAVEGACIÓN Y FLUJO
+       ========================================== */
+    function goToHome() {
+      playSound('pop');
+      document.getElementById('screen-welcome').classList.remove('hidden');
+      document.getElementById('screen-game').classList.add('hidden');
+      document.getElementById('screen-victory').classList.add('hidden');
+      document.getElementById('game-stats-bar').classList.add('hidden');
+    }
+
+    function startGame() {
+      playSound('win');
+      currentExerciseIndex = 0;
+      totalStars = 0;
+      document.getElementById('total-stars').textContent = totalStars;
+      
+      document.getElementById('screen-welcome').classList.add('hidden');
+      document.getElementById('screen-victory').classList.add('hidden');
+      document.getElementById('screen-game').classList.remove('hidden');
+      document.getElementById('game-stats-bar').classList.remove('hidden');
+
+      renderPantry();
+      setupDropZone();
+      loadExercise(currentExerciseIndex);
+    }
+
+    function restartGame() {
+      startGame();
+    }
+
+    /* ==========================================
+       LÓGICA DEL JUEGO
+       ========================================== */
+    function renderPantry() {
+      const pantryGrid = document.getElementById('pantry-grid');
+      pantryGrid.innerHTML = '';
+
+      PANTRY_ITEMS.forEach(item => {
+        const card = document.createElement('div');
+        card.className = "bg-amber-50 hover:bg-amber-100 border-2 border-amber-200 rounded-2xl p-2.5 flex items-center justify-between cursor-pointer transform hover:-translate-y-0.5 active:translate-y-0 transition shadow-sm group";
+        card.setAttribute('draggable', 'true');
+        card.setAttribute('data-id', item.id);
+
+        let sylColor = "bg-slate-200 text-slate-800";
+        if (item.syllables === 2) sylColor = "bg-blue-100 text-blue-800";
+        if (item.syllables === 3) sylColor = "bg-purple-100 text-purple-800";
+        if (item.syllables === 4) sylColor = "bg-pink-100 text-pink-800";
+
+        card.innerHTML = `
+          <div class="flex items-center space-x-2">
+            <span class="text-3xl group-hover:scale-110 transition-transform">${item.icon}</span>
+            <div class="text-left">
+              <div class="font-black text-slate-800 text-xs md:text-sm tracking-wide">${item.name}</div>
+              <div class="text-[10px] font-bold text-amber-700 tracking-wider uppercase">${item.syllabled}</div>
+            </div>
+          </div>
+          <span class="text-[10px] font-extrabold ${sylColor} px-2 py-0.5 rounded-full">
+            ${item.syllables} ${item.syllables === 1 ? 'sílaba' : 'sílabas'}
+          </span>
+        `;
+
+        card.onclick = () => addIngredientToPot(item);
+
+        card.addEventListener('dragstart', (e) => {
+          e.dataTransfer.setData('text/plain', item.id);
+          card.classList.add('dragging');
+          playSound('pop');
+        });
+
+        card.addEventListener('dragend', () => {
+          card.classList.remove('dragging');
+        });
+
+        pantryGrid.appendChild(card);
+      });
+    }
+
+    function setupDropZone() {
+      const potContainer = document.getElementById('pot-container');
+
+      potContainer.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        potContainer.classList.add('drag-over');
+      });
+
+      potContainer.addEventListener('dragleave', () => {
+        potContainer.classList.remove('drag-over');
+      });
+
+      potContainer.addEventListener('drop', (e) => {
+        e.preventDefault();
+        potContainer.classList.remove('drag-over');
+        const id = e.dataTransfer.getData('text/plain');
+        const item = PANTRY_ITEMS.find(i => i.id === id);
+        if (item) addIngredientToPot(item);
+      });
+    }
+
+    function addIngredientToPot(item) {
+      if (potContents.length >= 6) {
+        alert("¡La olla está llena! Sirve el plato o vacía un poco.");
+        return;
+      }
+      potContents.push(item);
+      playSound('drop');
+      updatePotUI();
+    }
+
+    function removeIngredientFromPot(index) {
+      potContents.splice(index, 1);
+      playSound('pop');
+      updatePotUI();
+    }
+
+    function clearPot() {
+      if (potContents.length > 0) {
+        potContents = [];
+        playSound('clear');
+        updatePotUI();
+      }
+    }
+
+    function clearPotIfEmptyHint() {
+      if (potContents.length === 0) {
+        playSound('pop');
+      }
+    }
+
+    function updatePotUI() {
+      const listContainer = document.getElementById('pot-ingredients-list');
+      const emptyMsg = document.getElementById('empty-pot-msg');
+      const potBubbles = document.getElementById('pot-bubbles');
+
+      listContainer.innerHTML = '';
+
+      if (potContents.length === 0) {
+        emptyMsg.classList.remove('hidden');
+        potBubbles.classList.add('hidden');
+      } else {
+        emptyMsg.classList.add('hidden');
+        potBubbles.classList.remove('hidden');
+
+        potContents.forEach((item, index) => {
+          const badge = document.createElement('div');
+          badge.className = "bg-amber-100 hover:bg-red-100 border border-amber-300 hover:border-red-300 text-amber-900 hover:text-red-700 font-bold px-3 py-1.5 rounded-xl text-xs flex items-center space-x-1.5 cursor-pointer transition transform hover:scale-105 shadow-sm";
+          badge.title = "Toca para quitar";
+          badge.innerHTML = `
+            <span>${item.icon}</span>
+            <span>${item.name}</span>
+            <span class="text-[10px] text-slate-400 ml-1">✕</span>
+          `;
+          badge.onclick = (e) => {
+            e.stopPropagation();
+            removeIngredientFromPot(index);
+          };
+          listContainer.appendChild(badge);
+        });
+      }
+
+      updateChecklistProgress();
+    }
+
+    function loadExercise(index) {
+      if (index >= EXERCISES_25.length) {
+        showVictoryScreen();
+        return;
+      }
+
+      currentOrder = EXERCISES_25[index];
+      currentCustomer = ANIMAL_CUSTOMERS[currentOrder.animalIdx];
+      potContents = [];
+
+      document.getElementById('current-ex-num').textContent = index + 1;
+      document.getElementById('exercise-badge').textContent = `${index + 1} de 25`;
+      document.getElementById('customer-avatar').textContent = currentCustomer.avatar;
+      document.getElementById('customer-name').textContent = currentCustomer.name;
+      document.getElementById('order-text').innerHTML = `"${currentOrder.text}"`;
+
+      updatePotUI();
+
+      setTimeout(() => speakOrder(), 500);
+    }
+
+    function updateChecklistProgress() {
+      const checklistContainer = document.getElementById('order-checklist');
+      checklistContainer.innerHTML = '';
+
+      if (!currentOrder) return;
+
+      currentOrder.reqs.forEach(req => {
+        let countInPot = 0;
+        if (req.syllables) {
+          countInPot = potContents.filter(i => i.syllables === req.syllables).length;
+        } else if (req.type) {
+          countInPot = potContents.filter(i => i.type === req.type).length;
+        }
+
+        const isMet = countInPot >= req.count;
+        const badge = document.createElement('span');
+        badge.className = `px-2.5 py-1 rounded-lg border text-[11px] font-extrabold flex items-center space-x-1 ${
+          isMet ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : 'bg-slate-100 text-slate-600 border-slate-200'
+        }`;
+
+        let label = req.syllables ? `${req.syllables} ${req.syllables === 1 ? 'sílaba' : 'sílabas'}` : req.type;
+        badge.innerHTML = `
+          <span>${isMet ? '✓' : '○'}</span>
+          <span>${req.count} ${label} (${countInPot}/${req.count})</span>
+        `;
+        checklistContainer.appendChild(badge);
+      });
+    }
+
+    function serveDish() {
+      if (potContents.length === 0) {
+        alert("¡La olla está vacía! Añade algunos ingredientes primero.");
+        return;
+      }
+
+      let metCount = 0;
+      let totalReqs = currentOrder.reqs.length;
+
+      currentOrder.reqs.forEach(req => {
+        let matchingItems = 0;
+        if (req.syllables) {
+          matchingItems = potContents.filter(i => i.syllables === req.syllables).length;
+        } else if (req.type) {
+          matchingItems = potContents.filter(i => i.type === req.type).length;
+        }
+
+        if (matchingItems >= req.count) metCount++;
+      });
+
+      let earnedStars = 1;
+      if (metCount === totalReqs) {
+        earnedStars = 3;
+      } else if (metCount > 0) {
+        earnedStars = 2;
+      }
+
+      showEvaluationModal(earnedStars);
+    }
+
+    function showEvaluationModal(stars) {
+      const modal = document.getElementById('result-modal');
+      const starsContainer = document.getElementById('modal-stars');
+      const feedbackEl = document.getElementById('modal-feedback');
+      const titleEl = document.getElementById('modal-title');
+      const iconEl = document.getElementById('modal-icon');
+
+      starsContainer.innerHTML = '';
+      for (let i = 1; i <= 3; i++) {
+        const star = document.createElement('i');
+        star.className = i <= stars 
+          ? "fa-solid fa-star text-amber-400 drop-shadow" 
+          : "fa-regular fa-star text-slate-300";
+        starsContainer.appendChild(star);
+      }
+
+      if (stars === 3) {
+        playSound('win');
+        iconEl.textContent = '🥳';
+        titleEl.textContent = '¡Pedido Perfecto!';
+        feedbackEl.textContent = `¡Fabuloso! Le diste a ${currentCustomer.name} exactamente los ingredientes con la cantidad de sílabas que pidió.`;
+        speakText(`¡Excelente! Le diste a ${currentCustomer.name} exactamente lo que pidió.`);
+      } else if (stars === 2) {
+        playSound('pop');
+        iconEl.textContent = '😋';
+        titleEl.textContent = '¡Muy Buen Intento!';
+        feedbackEl.textContent = `El cliente quedó contento, aunque faltó contar bien las sílabas de algunos ingredientes.`;
+      } else {
+        playSound('clear');
+        iconEl.textContent = '🤔';
+        titleEl.textContent = '¡Plato Chiflado!';
+        feedbackEl.textContent = `¡Vaya! Este plato no coincidió con la orden. Vuelve a contar las sílabas con tus dedos.`;
+      }
+
+      totalStars += stars;
+      document.getElementById('total-stars').textContent = totalStars;
+
+      modal.classList.remove('hidden');
+    }
+
+    function closeModalAndNext() {
+      document.getElementById('result-modal').classList.add('hidden');
+      currentExerciseIndex++;
+      loadExercise(currentExerciseIndex);
+    }
+
+    function showVictoryScreen() {
+      document.getElementById('screen-game').classList.add('hidden');
+      document.getElementById('game-stats-bar').classList.add('hidden');
+      document.getElementById('screen-victory').classList.remove('hidden');
+
+      document.getElementById('victory-total-stars').textContent = totalStars;
+      playSound('win');
+    }
+
+    /* ==========================================
+       INICIALIZACIÓN
+       ========================================== */
+    window.onload = function() {
+      // Carga inicial en la pantalla de bienvenida
+    };
+  </script>
+</body>
+</html>
